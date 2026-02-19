@@ -1,63 +1,63 @@
-name: deploy-hostinger
-on: 
-    push:
-        branches: [main, deploy-dev]    
-    workflow_dispatch:
+# name: deploy-hostinger
+# on: 
+#     push:
+#         branches: [main, deploy-dev]    
+#     workflow_dispatch:
 
-jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
 
-    steps:
+#     steps:
 
-      - name: Checkout repository
-        uses: actions/checkout@v3
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
         
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24.x
-      - name: Install dependencies
-        run: npm install
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: 24.x
+#       - name: Install dependencies
+#         run: npm install
 
-      - name: Create .env file
-        run: |
-          echo "VITE_API_URL=${{vars.API_URL}}/api" >> .env
-          echo "VITE_BACKEND_URL=${{vars.API_URL}}" >> .env
-          echo "VITE_APP_NAME=GRVA" >> .env
+#       - name: Create .env file
+#         run: |
+#           echo "VITE_API_URL=${{vars.API_URL}}/api" >> .env
+#           echo "VITE_BACKEND_URL=${{vars.API_URL}}" >> .env
+#           echo "VITE_APP_NAME=GRVA" >> .env
 
-      - name: Build project
-        run: npm run build
+#       - name: Build project
+#         run: npm run build
 
-# Copia o conteúdo do dist para a pasta tmp
-      - name: Upload build to tmp folder
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ vars.HOST }}
-          username: ${{ vars.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.PORT }}
-          source: "dist/*"
-          target: "/home/u633278083/domains/grva.com.br/public_html/tmp"
-          strip_components: 1
+# # Copia o conteúdo do dist para a pasta tmp
+#       - name: Upload build to tmp folder
+#         uses: appleboy/scp-action@v0.1.7
+#         with:
+#           host: ${{ vars.HOST }}
+#           username: ${{ vars.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           port: ${{ vars.PORT }}
+#           source: "dist/*"
+#           target: "/home/u633278083/domains/grva.com.br/public_html/tmp"
+#           strip_components: 1
 
 
-# Se deu tudo certo, limpa arquivos antigos e move tmp para public_html
-      - name: Finalize deploy
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ vars.HOST }}
-          username: ${{ vars.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ vars.PORT }}
-          script: |
-            # Remove assets e index.html
-            rm -rf /home/u633278083/domains/grva.com.br/public_html/assets
-            rm -f /home/u633278083/domains/grva.com.br/public_html/index.html
+# # Se deu tudo certo, limpa arquivos antigos e move tmp para public_html
+#       - name: Finalize deploy
+#         uses: appleboy/ssh-action@v1.0.3
+#         with:
+#           host: ${{ vars.HOST }}
+#           username: ${{ vars.USERNAME }}
+#           key: ${{ secrets.SSH_PRIVATE_KEY }}
+#           port: ${{ vars.PORT }}
+#           script: |
+#             # Remove assets e index.html
+#             rm -rf /home/u633278083/domains/grva.com.br/public_html/assets
+#             rm -f /home/u633278083/domains/grva.com.br/public_html/index.html
 
-            # Move conteúdo do tmp para public_html
-            mv /home/u633278083/domains/grva.com.br/public_html/tmp/* /home/u633278083/domains/grva.com.br/public_html/
+#             # Move conteúdo do tmp para public_html
+#             mv /home/u633278083/domains/grva.com.br/public_html/tmp/* /home/u633278083/domains/grva.com.br/public_html/
 
-            # Remove a pasta tmp
-            rm -rf /home/u633278083/domains/grva.com.br/public_html/tmp
+#             # Remove a pasta tmp
+#             rm -rf /home/u633278083/domains/grva.com.br/public_html/tmp
             

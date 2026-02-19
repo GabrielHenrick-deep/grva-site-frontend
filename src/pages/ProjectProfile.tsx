@@ -41,7 +41,7 @@ const ProjectProfile: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 text-gray-200 px-4 py-12 flex flex-col items-center">
+    <div className="min-h-screen bg-transparent from-black via-gray-900 to-gray-800 text-gray-200 px-4 py-12 flex flex-col items-center">
       <button
         onClick={() => navigate(-1)}
         className="flex items-center gap-2 text-gray-400 hover:text-white transition mb-8 w-full max-w-5xl"

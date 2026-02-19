@@ -101,7 +101,7 @@ export function Research() {
     };
 
   return (
-    <section className="py-16 bg-gray-900">
+    <section className="py-16 bg-slate-900/60 backdrop-blur-sm border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:text-center">
           <p className="mt-2 text-4xl leading-8 font-extrabold tracking-tight text-white sm:text-5xl">

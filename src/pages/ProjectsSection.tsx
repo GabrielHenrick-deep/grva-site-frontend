@@ -55,7 +55,7 @@ export function ProjectsSection() {
       }, []);
 
   return (
-    <section className="py-8 md:py-16 bg-gray-900">
+    <section className="py-8 md:py-16 bg-slate-900/40 backdrop-blur-md border-t border-white/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="lg:text-center mb-12">
           <p className="text-4xl font-extrabold text-white sm:text-5xl">

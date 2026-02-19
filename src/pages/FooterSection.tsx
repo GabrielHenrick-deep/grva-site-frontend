@@ -6,7 +6,7 @@ import "slick-carousel/slick/slick-theme.css";
 import Slider  from "react-slick";
 export function FooterSection() {
     return (
-          <footer className="bg-gray-800 text-white w-full">
+          <footer className="bg-slate-950/80 backdrop-blur-lg border-t border-white/10 text-white w-full relative z-20">
             <div className="w-full py-12 px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-8 items-start justify-between">
                 

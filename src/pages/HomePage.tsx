@@ -1,151 +1,136 @@
-import React, { useEffect, useState } from 'react'
-import { Glasses, Search, Menu, User, Calendar, Clock, ArrowRight, X, Youtube, Mail, Facebook, Twitter, Instagram, Phone, MapPin, Brain, GraduationCap, Globe2 } from 'lucide-react'
+import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import Slider  from "react-slick";
+import Slider from "react-slick";
+import { motion } from 'framer-motion';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Environment } from '@react-three/drei';
+import * as THREE from 'three';
+
+import { api } from '../lib/api';
+import { Publication } from '../types/publications';
+import { Model } from '../components/model';
 import { Research } from './Research';
 import { ProjectsSection } from './ProjectsSection';
 import { FooterSection } from './FooterSection';
-import { AnimatePresence, motion } from 'framer-motion';
-import { api } from '../lib/api';
-import { Plus, Trash2,  Image as ImageIcon } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import {Publication} from '../types/publications';
-import {Canvas} from '@react-three/fiber';
-import { Environment, OrbitControls, PerspectiveCamera, ContactShadows } from '@react-three/drei';
-import { Model } from '../components/model';
 
+// --- COMPONENTE DO MODELO QUE REAGE AO SCROLL ---
+// Repare que as partículas não estão mais aqui, pois assumimos que 
+// você as colocou globalmente no arquivo App.tsx!
+export function ScrollReactiveScene() {
+  const groupRef = useRef<THREE.Group>(null);
+  const { viewport } = useThree();
 
-export  function HomePage() {
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    
+    // 1. Calcula a porcentagem do scroll (de 0.0 a 1.0)
+    const scrollY = window.scrollY;
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    // Evita divisão por zero e garante que o valor fique entre 0 e 1
+    const scrollPercent = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
 
-  const navigate = useNavigate();
+    // 2. Define onde o modelo começa (topo) e onde termina (rodapé)
+    const isMobile = viewport.width < 5;
+    const startX = isMobile ? 0 : 2.5;  // Começa na DIREITA
+    const endX = isMobile ? 0 : -3.0;   // Termina na ESQUERDA
 
-  const [currentPage, setCurrentPage] = React.useState('home');
-  const [publication, setPublications] = useState<Publication[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [error, setError] = useState<string | null>(null);
-   
+    // 3. Calcula a posição Alvo (Target X) baseada no scroll atual
+    const targetX = startX + (endX - startX) * scrollPercent;
+    
+    // 4. Move o modelo suavemente (Lerp) para a posição Alvo
+    groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, 0.05);
 
-      // ✅ Carregar imagens da API
-      useEffect(() => {
-        async function fetchPublication() {
-          try {
-            const response = await api.get('/publications');
-            setPublications(response.data);
-          } catch (err) {
-            console.error('Erro ao buscar Uploads:', err);
-            setError('Erro ao carregar Uploads. ');
-          } finally{
-            setLoading(false);
-          }
-        }
-        fetchPublication();
-      }, []);
-  const renderPage = () => {
-    switch (currentPage) {
-       
-      default:
-        return (
-          <motion.div
-            key="home"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -20 }}
-            transition={{ duration: 0.3 }}
-            className="min-h-screen bg-gray-50"
-          >
-           {/* Hero Section */}
-            <div className="relative overflow-hidden min-h-[400px] md:min-h-[600px]" >
-            
-              <Slider
-                dots={false}
-                infinite={true}
-                speed={500}
-                slidesToShow={1}
-                slidesToScroll={1}
-                autoplay={true}
-                autoplaySpeed={3000}
-                fade={true}
-                className="absolute inset-0 w-full h-full"
-              >
-                {publication.map((img, index) => (
-              <div key={index} className="w-full h-[400px] md:h-[600px] flex justify-center items-center">
-                <img src={img.image_url} alt={`Slide ${index}`} className="w-full h-full object-cover" />
-              </div>
-            ))}
-              </Slider>
-              <div className="absolute inset-0 bg-black bg-opacity-40"></div>
-
-              <div className="max-w-7xl mx-auto relative z-10 py-3">
-                {/* Adicionado grid grid-cols-1 lg:grid-cols-2 gap-8 items-center nesta div abaixo */}
-                <div className="relative pb-8 sm:pb-16 md:pb-20 lg:pb-28 xl:pb-32 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                  
-                  {/* Coluna 1: Texto */}
-                  <main className="mt-10 mx-auto max-w-7xl px-4 sm:mt-12 sm:px-6 md:mt-16 lg:mt-20 lg:px-8 xl:mt-28">
-                      <div className="sm:text-center lg:text-left">
-                      <h1 className="text-4xl tracking-tight font-extrabold text-white sm:text-5xl md:text-6xl">
-                        <span className="block xl:inline">Bem-vindo ao</span>{' '}
-                        <span className="block text-white xl:inline">GRVA</span>
-                      </h1>
-                      <p className="mt-3 text-base text-gray-200 sm:mt-5 sm:text-lg sm:max-w-xl sm:mx-auto md:mt-5 md:text-xl lg:mx-0">
-                        Grupo de Pesquisa em Realidade Virtual e Aumentada
-                      </p>
-                      <div className="mt-5 sm:mt-8 sm:flex sm:justify-center lg:justify-start">
-                        <div className="rounded-md shadow">
-                        <Link
-                          to="/members"
-                          className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-extralight rounded-md text-white bg-blue-900 hover:bg-blue-600 hover:scale-105 transform transition-transform duration-300 md:py-4 md:text-lg md:px-10"
-                        >
-                          Conheça nossos pesquisadores
-                        </Link>
-                        </div>
-                        <div className="mt-3 sm:mt-0 sm:ml-3">
-                        <Link
-                          to="/contact"
-                          className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-extralight rounded-md text-white bg-gray-700 hover:bg-gray-600 hover:scale-105 transform transition-transform duration-300 md:py-4 md:text-lg md:px-10"
-                        >
-                          Entre em contato
-                        </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </main>
-
-                  {/* Coluna 2: Modelo 3D */}
-                  <div className='hidden lg:block h-[400px] md:h-[600px] w-full cursor-grab active:cursor-grabbing'>
-                    <Canvas shadows>
-                      <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
-                      <ambientLight intensity={0.5} />
-                      <directionalLight position={[10, 10, 5]} intensity={2} />
-                      <directionalLight position={[10, 10, -5]} intensity={1} color="#4b8f5"/>
-                      <Environment preset='city'/>
-                      <Model/>
-                      <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5}/>
-                    </Canvas>
-                  </div>
-                  
-                </div>
-              </div>
-            </div>
-          {/* Featured areas de pesquisa*/}
-          <Research/>
-          {/* Featured Projects Section */}
-          <ProjectsSection/>
-          {/* Footer */}
-          <FooterSection/>
-          </motion.div>
-        );
-    }
-  };
+    // 5. Mantém a rotação e a flutuação
+    groupRef.current.rotation.y = (state.clock.elapsedTime * 0.2) + (scrollY * 0.002);
+    groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.2;
+  });
 
   return (
-    <AnimatePresence>
-      {renderPage()}
-    </AnimatePresence>
+    <>
+      <ambientLight intensity={0.4} />
+      <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} intensity={1} />
+      <Environment preset="city" />
+      <group ref={groupRef} scale={1.2}>
+        <Model />
+      </group>
+    </>
   );
 }
 
+export function HomePage() {
+  const [publications, setPublications] = useState<Publication[]>([]);
+  
+  useEffect(() => {
+    async function fetchPublication() {
+      try {
+        const response = await api.get('/publications');
+        setPublications(response.data);
+      } catch (err) {
+        console.error('Erro ao buscar publicações:', err);
+      }
+    }
+    fetchPublication();
+  }, []);
+
+  return (
+    // bg-transparent garante que o fundo global de estrelas do App.tsx apareça!
+    <div className="relative min-h-screen bg-transparent text-white selection:bg-blue-500/30">
+      
+      {/* CAMADA 1: BACKGROUND 3D DO MODELO FIXO (Mova de um lado para o outro) */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
+          <ScrollReactiveScene />
+        </Canvas>
+      </div>
+
+      {/* CAMADA 2: CONTEÚDO HTML (Rola por cima do 3D) */}
+      <div className="relative z-10 w-full">
+        
+        {/* HERO SECTION */}
+        <section className="relative min-h-screen flex items-center pt-20 pb-12">
+          {/* Slider de fundo sutil no Hero (Textura leve de imagens) */}
+          <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+            <Slider fade autoplay speed={2000} arrows={false}>
+              {publications.map((img, index) => (
+                <div key={index} className="h-screen w-full">
+                  <img src={img.image_url} className="w-full h-full object-cover grayscale" alt="slide" />
+                </div>
+              ))}
+            </Slider>
+          </div>
+
+          <div className="container mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
+              <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight">
+                Bem-vindo ao <br />
+                <span className="text-blue-500 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">
+                   GRVA
+                </span>
+              </h1>
+              <p className="mt-6 text-xl text-gray-400 max-w-lg">
+                Grupo de Pesquisa em Realidade Virtual e Aumentada
+              </p>
+              <div className="mt-10 flex flex-wrap gap-4">
+                <Link to="/members" className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-full font-semibold transition-all shadow-lg shadow-blue-500/20">
+                  Nossa Equipe
+                </Link>
+                <Link to="/contact" className="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 rounded-full font-semibold transition-all">
+                  Fale Conosco
+                </Link>
+              </div>
+            </motion.div>
+            
+            {/* Div vazia na direita apenas para ocupar o espaço inicial do modelo no grid */}
+            <div className="hidden lg:block h-[500px]"></div>
+          </div>
+        </section>
+
+        {/* OUTRAS SEÇÕES */}
+        {/* Obs: Lembre-se de colocar bg-slate-900/60 (com transparência) na raiz desses componentes! */}
+        <Research />
+        <ProjectsSection />
+        <FooterSection />
+      </div>
+    </div>
+  );
+}

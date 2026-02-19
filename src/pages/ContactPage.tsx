@@ -23,7 +23,7 @@ export function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-900 py-20 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-transparent py-20 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-4xl font-semibold text-white mb-12 text-center">
           Entre em Contato

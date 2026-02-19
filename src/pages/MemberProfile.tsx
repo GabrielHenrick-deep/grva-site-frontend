@@ -4,6 +4,7 @@ import { ArrowLeft, Mail } from 'lucide-react';
 import { Member } from '../types/members'; // Removido 'Project' se não for usado aqui
 import { api } from '../lib/api';
 
+
 export function MemberProfile() {
   const { id } = useParams<{ id: string }>(); // Tipagem para o id
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ export function MemberProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8 text-gray-300">
+    <div className="min-h-screen bg-transparent from-gray-900 via-gray-800 to-gray-900 py-12 px-4 sm:px-6 lg:px-8 text-gray-300">
       <div className="max-w-4xl mx-auto">
         <button
           onClick={() => navigate('/members')}

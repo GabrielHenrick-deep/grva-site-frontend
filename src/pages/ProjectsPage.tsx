@@ -55,7 +55,7 @@ const ProjectsPage: React.FC = () => {
     return <div className="text-red-500 text-center py-20">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-800 px-4 py-12">
+    <div className="min-h-screen bg-transparent from-black via-gray-900 to-gray-800 px-4 py-12">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-4xl font-extrabold text-white drop-shadow-md">Nossos Projetos</h1>
