@@ -1,0 +1,52 @@
+
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { Header } from './components/Header';
+import { Footer } from './components/Footer';
+import { HomePage } from './pages/HomePage';
+import { MembersPage } from './pages/MembersPage';
+import { MemberProfile } from './pages/MemberProfile';
+import { ContactPage } from './pages/ContactPage';
+import ProjectsPage from './pages/ProjectsPage';
+import ProjectsProfile from './pages/ProjectProfile';
+import { BlogPage } from './pages/BlogPage';
+import { AdminDashboard } from './components/AdminDashboard';
+import LoginScreen from './components/LoginScreen'
+import { PrivateRoute } from './components/PrivateRoute';
+
+
+function App() {
+  return (
+    
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Header />
+        <div className="pt-16 flex-grow">
+          <Routes>
+            <Route path="/members" element={<MembersPage />} />
+            <Route path="/home" element={<BlogPage />} />            
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/member/:id" element={<MemberProfile />} />
+            <Route path="/projects/:id" element={<ProjectsProfile />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<LoginScreen />} />
+            {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+            <Route
+              path="/admin"
+              element={
+                <PrivateRoute>
+                  <AdminDashboard />
+                </PrivateRoute>
+              }
+            />
+
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
+    
+  );
+}
+
+export default App;
