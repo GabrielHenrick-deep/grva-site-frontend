@@ -3,7 +3,7 @@ import { useParams, useNavigate, Link} from 'react-router-dom';
 import { api } from '../lib/api';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import ReactPlayer from 'react-player';
-import { Project } from '../types/projects';
+import { Project } from '../types/project';
 
 
 function isGoogleDriveUrl(url: string): boolean {
@@ -110,24 +110,36 @@ const ProjectProfile: React.FC = () => {
               ))}
             </ul>
           </div>
+
         )}
-        {/* Membros relacionados */}
-        {project.members && project.members.length > 0 && (
+        {/* Verificamos se 'members' existe e se a lista não está vazia */}
+        {project.member && project.member.length > 0 && (
           <div>
             <h2 className="text-2xl font-semibold text-white mb-4">
-              Membros Relacionados
+              Pesquisadores Relacionados
             </h2>
             <ul className="flex flex-wrap gap-4">
-              {project.members.map((member) => (
+
+              {/* Como é uma lista, usamos o .map() para exibir cada membro! */}
+              {project.member.map((member) => (
                 <li key={member.id}>
                   <Link
                     to={`/member/${member.id}`}
-                    className="text-blue-400 hover:underline font-medium"
+                    className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-lg border border-gray-700 hover:border-blue-500 hover:shadow-lg transition-all"
                   >
-                    {member.name}
+                    {/* Bônus: Coloquei a fotinha pequena deles do lado do nome! */}
+                    <img
+                      src={member.foto}
+                      alt={member.name}
+                      className="w-8 h-8 rounded-full object-cover"
+                    />
+                    <span className="text-blue-400 font-medium">
+                      {member.name}
+                    </span>
                   </Link>
                 </li>
               ))}
+
             </ul>
           </div>
         )}

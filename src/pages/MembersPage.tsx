@@ -2,18 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Search } from 'lucide-react';
 import { api } from '../lib/api';
 import { MemberCard } from '../components/MemberCard';
-import { useParams, useNavigate } from 'react-router-dom';
 import type { Member, MemberCategory } from '../types/members';
 
 const categories: MemberCategory[] = ['Mestrando(a)' , 'Doutorando(a)' , 'Pós-Doutorando(a)' , 'Iniciação Científica'];
 
 export function MembersPage() {
-  const { id } = useParams();
-  const navigate = useNavigate();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [member, setMember] = useState<Member | null>(null);
-  const [projectData] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState<'all' | MemberCategory>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
@@ -22,31 +17,25 @@ export function MembersPage() {
       const response = await api.get('/members');
       setMembers(response.data);
     } catch (error) {
-      console.error('Erro ao buscar projetos:', error);
+      console.error('Erro ao buscar membros:', error);
     } finally {
       setLoading(false);
     }
   };
-    useEffect(() => {
-      fetchMembers();
-    }, []);
-  
 
-  // const filteredMembers = members.filter(member => {
-  //   const matchesSearch = member.name.toLowerCase().includes(searchTerm.toLowerCase());
-  //   const matchesCategory = selectedCategory === 'all' || member.category === selectedCategory;
-  //   return matchesSearch && matchesCategory;
-  // });
- 
-const filteredMembers = members
-  .filter((member) => {
-    const nameMatch = (member.name || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const categoryMatch = (member.category || '').toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === 'all' || member.category === selectedCategory;
+  useEffect(() => {
+    fetchMembers();
+  }, []);
 
-    return (nameMatch || categoryMatch) && matchesCategory;
-  })
-  .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+  const filteredMembers = members
+    .filter((member) => {
+      const nameMatch = (member.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const categoryMatch = (member.category || '').toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = selectedCategory === 'all' || member.category === selectedCategory;
+
+      return (nameMatch || categoryMatch) && matchesCategory;
+    })
+    .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
   return (
     <div className="min-h-screen bg-transparent py-12 px-4 sm:px-6 lg:px-8">
@@ -96,12 +85,16 @@ const filteredMembers = members
           </div>
         </div>
 
-        {/* Members Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredMembers.map((member) => (
-            <MemberCard key={member.id} member={member} />
-          ))}
-        </div>
+        {/* Verifica se está carregando antes de renderizar os cards */}
+        {loading ? (
+          <div className="text-center text-gray-400 mt-10">Carregando pesquisadores...</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredMembers.map((member) => (
+              <MemberCard key={member.id} member={member} />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

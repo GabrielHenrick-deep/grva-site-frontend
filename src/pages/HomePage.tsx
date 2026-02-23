@@ -13,34 +13,27 @@ import { Research } from './Research';
 import { ProjectsSection } from './ProjectsSection';
 import { FooterSection } from './FooterSection';
 
-// --- COMPONENTE DO MODELO QUE REAGE AO SCROLL ---
-// Repare que as partículas não estão mais aqui, pois assumimos que 
-// você as colocou globalmente no arquivo App.tsx!
+
 export function ScrollReactiveScene() {
   const groupRef = useRef<THREE.Group>(null);
   const { viewport } = useThree();
 
   useFrame((state) => {
     if (!groupRef.current) return;
-    
-    // 1. Calcula a porcentagem do scroll (de 0.0 a 1.0)
+
     const scrollY = window.scrollY;
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-    // Evita divisão por zero e garante que o valor fique entre 0 e 1
+
     const scrollPercent = maxScroll > 0 ? Math.min(Math.max(scrollY / maxScroll, 0), 1) : 0;
 
-    // 2. Define onde o modelo começa (topo) e onde termina (rodapé)
     const isMobile = viewport.width < 5;
-    const startX = isMobile ? 0 : 2.5;  // Começa na DIREITA
-    const endX = isMobile ? 0 : -3.0;   // Termina na ESQUERDA
+    const startX = isMobile ? 0 : 2.5;
+    const endX = isMobile ? 0 : -3.0;
 
-    // 3. Calcula a posição Alvo (Target X) baseada no scroll atual
     const targetX = startX + (endX - startX) * scrollPercent;
-    
-    // 4. Move o modelo suavemente (Lerp) para a posição Alvo
+
     groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetX, 0.05);
 
-    // 5. Mantém a rotação e a flutuação
     groupRef.current.rotation.y = (state.clock.elapsedTime * 0.2) + (scrollY * 0.002);
     groupRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.5) * 0.2;
   });
@@ -59,7 +52,6 @@ export function ScrollReactiveScene() {
 
 export function HomePage() {
   const [publications, setPublications] = useState<Publication[]>([]);
-  
   useEffect(() => {
     async function fetchPublication() {
       try {
@@ -75,7 +67,7 @@ export function HomePage() {
   return (
     // bg-transparent garante que o fundo global de estrelas do App.tsx apareça!
     <div className="relative min-h-screen bg-transparent text-white selection:bg-blue-500/30">
-      
+
       {/* CAMADA 1: BACKGROUND 3D DO MODELO FIXO (Mova de um lado para o outro) */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 8], fov: 45 }}>
@@ -85,20 +77,8 @@ export function HomePage() {
 
       {/* CAMADA 2: CONTEÚDO HTML (Rola por cima do 3D) */}
       <div className="relative z-10 w-full">
-        
         {/* HERO SECTION */}
         <section className="relative min-h-screen flex items-center pt-20 pb-12">
-          {/* Slider de fundo sutil no Hero (Textura leve de imagens) */}
-          <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
-            <Slider fade autoplay speed={2000} arrows={false}>
-              {publications.map((img, index) => (
-                <div key={index} className="h-screen w-full">
-                  <img src={img.image_url} className="w-full h-full object-cover grayscale" alt="slide" />
-                </div>
-              ))}
-            </Slider>
-          </div>
-
           <div className="container mx-auto px-6 relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-12">
             <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }}>
               <h1 className="text-5xl md:text-7xl font-extrabold tracking-tighter leading-tight">
@@ -107,7 +87,7 @@ export function HomePage() {
                    GRVA
                 </span>
               </h1>
-              <p className="mt-6 text-xl text-gray-400 max-w-lg">
+              <p className="mt-6 text-xl text-gray-100 max-w-lg">
                 Grupo de Pesquisa em Realidade Virtual e Aumentada
               </p>
               <div className="mt-10 flex flex-wrap gap-4">
@@ -119,7 +99,6 @@ export function HomePage() {
                 </Link>
               </div>
             </motion.div>
-            
             {/* Div vazia na direita apenas para ocupar o espaço inicial do modelo no grid */}
             <div className="hidden lg:block h-[500px]"></div>
           </div>

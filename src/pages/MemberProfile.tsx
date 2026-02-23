@@ -73,21 +73,23 @@ export function MemberProfile() {
               className="w-48 h-48 rounded-full object-cover border-4 border-blue-600 shadow-lg"
             />
             
-            {member.projects && member.projects.length > 0 && (
+{/* Verifica apenas se o projeto existe (não precisa de .length) */}
+            {member.project && (
               <div className="w-full mt-6">
-                <h3 className="text-lg font-semibold text-gray-200 mb-2 text-center">Projetos</h3>
-                <ul className="text-blue-400 underline space-y-1 text-center">
-                  {member.projects.map((project) => (
-                    <li key={project.id}>
-                      <Link
-                        to={`/projects/${project.id}`}
-                        className="hover:text-blue-600 transition-colors"
-                      >
-                        {project.title}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                <h3 className="text-lg font-semibold text-gray-200 mb-2 text-center">Projeto</h3>
+                
+                <div className="text-center">
+                  {/* Sem .map()! Chamamos o id e o title direto do objeto */}
+                  <Link
+                    to={`/projects/${member.project.id}`}
+                    className="text-blue-400 underline hover:text-blue-600 transition-colors"
+                  >
+                    {member.project.title.length > 30
+                    ? `${member.project.title.substring(0, 40)}...`
+                    : member.project.title 
+                    }
+                  </Link>
+                </div>
               </div>
             )}
           </div>

@@ -85,7 +85,10 @@ export function ProjectsSection() {
                   <div className="  overflow-hidden shadow-lg transform transition-all hover:scale-105">
                   <img
                     src={project.image_url}
-                    alt={project.title}
+                    alt={project.title.length > 5
+                      ? `${project.title.substring(0, 5)}...`
+                      :project.title
+                    }
                     loading="lazy"
                     className="w-full h-52 object-cover"
                   />

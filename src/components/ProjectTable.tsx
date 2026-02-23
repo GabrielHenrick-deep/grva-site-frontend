@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Edit, Trash2, Plus, Search } from 'lucide-react';
 import { Modal } from './Modal';
 import { api } from '../lib/api';
-import { Project } from '../types/projects';
+import { Project } from '../types/project';
 
 export const ProjectTable: React.FC = () => {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -83,8 +83,8 @@ export const ProjectTable: React.FC = () => {
         name_project: project.title,
         descri: project.resumo,
         video_url: project.video || '',
-        member: project.members.map(member => member.name).join(', '),
-        artigo: project.artigo.map(a => a.title).join(', '),
+        member: project.member?.map(members => members.name).join(', ') || '',
+        artigo: project.artigo?.map(a => a.title).join(', ') || '',
       });
     } else {
       setEditingProject(null);

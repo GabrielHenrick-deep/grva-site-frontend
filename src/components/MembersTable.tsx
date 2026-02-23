@@ -3,18 +3,20 @@ import { Edit, Trash2, Plus, Search } from 'lucide-react';
 import { Modal } from './Modal';
 import { api } from '../lib/api';
 import axios from '../api/axios';
-import { Member } from '../types/members';
+import { Member, Project } from '../types/members';
 
 export const MembersTable: React.FC = () => {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | null>(null);
+  const [availableProjects, setAvailableProjects] = useState<Project[]>([]);
+
   const [searchTerm, setSearchTerm] = useState('');
 
   const [formData, setFormData] = useState({
     name: '',
-    foto: '',
+    foto: '' as string | File,
     category: '',
     email: '',
     cell: '',
@@ -23,7 +25,7 @@ export const MembersTable: React.FC = () => {
     linkedin: '',
     orcid: '',
     link: '',
-    projects: [] as { id: number; title: string }[],
+    project_id: '' as string | number,
   });
 
   // 🔥 Carregar membros
@@ -38,20 +40,36 @@ export const MembersTable: React.FC = () => {
     }
   };
 
+  const fetchProjects = async () => {
+    try {
+      const response = await api.get('/projects');
+      setAvailableProjects(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar projetos:', error);
+    }
+  };
+  
+
   useEffect(() => {
     fetchMembers();
+    fetchProjects();
   }, []);
 const buildFormData = () => {
   const data = new FormData();
-  if (formData.foto) {
-    data.append('foto', formData.foto);
-  }
-  data.append('name', formData.name);
-  data.append('category', formData.category);
-  data.append('email', formData.email);
+  
+  Object.keys(formData).forEach((key) => {
+    // Pegamos o valor atual
+    const value = formData[key as keyof typeof formData];
+
+    // Só adicionamos se não for o array de projetos e se o valor existir
+    if (key !== 'projects' && value !== null && value !== undefined) {
+      // Forçamos o TypeScript a entender que é uma string/Blob
+      data.append(key, value as string | Blob);
+    }
+  });
+
   return data;
 };
-
 
 
   // ➕ Criar membro
@@ -113,7 +131,7 @@ const updateMember = async () => {
         linkedin: member.linkedin,
         orcid: member.orcid,
         link: member.link,
-        projects: member.projects,
+        project_id: member.project ? member.project.id: '',
       });
     } else {
       setEditingMember(null);
@@ -128,7 +146,7 @@ const updateMember = async () => {
         linkedin: '',
         orcid: '',
         link: '',
-        projects: [],
+        project_id: '',
       });
     }
     setIsModalOpen(true);
@@ -187,7 +205,13 @@ const filteredMembers = members
   )
   .sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-
+  const maskPhoneBR = (value: string): string => {
+    return value
+      .replace(/\D/g, '')               // só números
+      .replace(/^(\d{2})(\d)/g, '($1) $2') // (11) 9
+      .replace(/(\d{5})(\d)/, '$1-$2')   // 98765-4321
+      .replace(/(-\d{4})\d+?$/, '$1');   // limita
+  };
   return (
     <div className="space-y-6">
     <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -201,24 +225,6 @@ const filteredMembers = members
           className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400"
         />
       </div>
-
-      {/* Upload de CSV */}
-      <div className="flex items-center space-x-4">
-        <input
-          type="file"
-          accept=".csv"
-          onChange={handleCsvInput}
-          className="text-white"
-        />
-        <button
-          onClick={handleCsvUpload}
-          className="flex items-center space-x-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus size={20} />
-          <span>Importar CSV</span>
-        </button>
-      </div>
-    {/* Botão*/}
     <div className="flex items-center space-x-4">
       <button
       onClick={() => handleOpenModal()}
@@ -299,18 +305,40 @@ const filteredMembers = members
         title={editingMember ? 'Editar Membro' : 'Adicionar Membro'}
       >
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* CAMPO DE UPLOAD DE IMAGEM */}
           <div>
-        <label className="block text-sm font-medium text-gray-200 mb-1">
-          URL da Imagem
-        </label>
-        <input
-          type="text"
-          value={formData.foto}
-          onChange={(e) => setFormData({ ...formData, foto: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400"
-          placeholder=" "
-          required
-        />
+            <label className="block text-sm font-medium text-gray-200 mb-1">
+              Foto do Pesquisador
+            </label>
+            <input
+              type="file"
+              accept="image/*" // Aceita apenas imagens (png, jpg, etc)
+              onChange={(e) => {
+                // Se o usuário selecionou um arquivo, salvamos no state
+                if (e.target.files && e.target.files.length > 0) {
+                  setFormData({ ...formData, foto: e.target.files[0] });
+                }
+              }}
+              // Estilizando o botão de escolher arquivo com Tailwind
+              className="w-full text-sm text-gray-400
+                file:mr-4 file:py-2 file:px-4
+                file:rounded-md file:border-0
+                file:text-sm file:font-semibold
+                file:bg-blue-600 file:text-white
+                hover:file:bg-blue-700 cursor-pointer"
+            />
+            {/* MINIATURA DA IMAGEM (Preview) */}
+            {formData.foto && (
+              <div className="mt-3">
+                <p className="text-xs text-gray-400 mb-1">Pré-visualização:</p>
+                <img
+                  // Se for string, é a URL que veio do banco. Se for File, criamos uma URL temporária do arquivo novo!
+                  src={typeof formData.foto === 'string' ? formData.foto : URL.createObjectURL(formData.foto)}
+                  alt="Preview"
+                  className="w-20 h-20 object-cover rounded-full border-2 border-blue-500"
+                />
+              </div>
+            )}
           </div>
           <div>
         <label className="block text-sm font-medium text-gray-200 mb-1">Nome</label>
@@ -322,15 +350,42 @@ const filteredMembers = members
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400"
         />
           </div>
+{/* CAMPO DE CATEGORIA (Agora é um Dropdown) */}
           <div>
-        <label className="block text-sm font-medium text-gray-200 mb-1">Categoria</label>
-        <input
-          type="text"
-          required
-          value={formData.category}
-          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400"
-        />
+            <label className="block text-sm font-medium text-gray-200 mb-1">Categoria</label>
+            <select
+              required
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400 cursor-pointer"
+            >
+              {/* Opção padrão vazia que força o usuário a escolher uma */}
+              <option value="" disabled>Selecione uma categoria</option>
+              {/* As suas categorias fixas */}
+              <option value="Mestrando(a)">Mestrando(a)</option>
+              <option value="Doutorando(a)">Doutorando(a)</option>
+              <option value="Pós-Doutorando(a)">Pós-Doutorando(a)</option>
+              <option value="Iniciação Científica">Iniciação Científica</option>
+              {/* Você pode adicionar mais opções aqui no futuro, se precisar */}
+              <option value="Pesquisador(a) Colaborador(a)">Pesquisador(a) Colaborador(a)</option>
+              <option value="Professor(a)">Professor(a)</option>
+            </select>
+          </div>
+          {/* NOVO CAMPO: DROPDOWN DE PROJETOS */}
+          <div>
+            <label className="block text-sm font-medium text-gray-200 mb-1">Projeto Vinculado</label>
+            <select
+              value={formData.project_id}
+              onChange={(e) => setFormData({ ...formData, project_id: e.target.value })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400"
+            >
+              <option value="">Selecione um projeto (Opcional)</option>
+              {availableProjects.map((proj) => (
+                <option key={proj.id} value={proj.id}>
+                  {proj.title} {/* Assumindo que o nome do projeto no seu model seja 'title' */}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
         <label className="block text-sm font-medium text-gray-200 mb-1">Email</label>
@@ -344,12 +399,18 @@ const filteredMembers = members
           </div>
           <div>
         <label className="block text-sm font-medium text-gray-200 mb-1">Celular</label>
-        <input
-          type="text"
-          value={formData.cell}
-          onChange={(e) => setFormData({ ...formData, cell: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100 placeholder-gray-400"
-        />
+            <input
+              type="text"
+              value={formData.cell}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  cell: maskPhoneBR(e.target.value),
+                })
+              }
+              placeholder="(99) 9 9999-9999"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-800 text-gray-100"
+            />
           </div>
           <div>
         <label className="block text-sm font-medium text-gray-200 mb-1">Pesquisa</label>

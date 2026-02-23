@@ -19,5 +19,5 @@ export interface Member {
   link: string;
   created_at: string;
   updated_at: string;
-  projects: Project[];
+  project: Project;
 }

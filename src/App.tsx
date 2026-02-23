@@ -15,25 +15,22 @@ import { GlobalStarBackground } from './components/GlobalStarBackground';
 
 function App() {
   return (
-    // 1. Removido o bg-gray-50 e trocado por bg-transparent
-    // 2. Adicionado 'relative' e 'text-white' como base
     <div className="min-h-screen bg-transparent flex flex-col text-white relative">
-      
-      {/* BACKGROUND GLOBAL (Fica fixo e no fundo z-0) */}
+
       <GlobalStarBackground />
-      
-      {/* HEADER (Certifique-se de que ele tenha transparência/backdrop-blur) */}
+
       <Header />
-      
+
       {/* CONTAINER DAS PÁGINAS (z-10 garante que fique acima das estrelas) */}
       <div className="pt-16 flex-grow relative z-10">
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="/home" element={<BlogPage />} />            
+          <Route path="/blog" element={<BlogPage />} />
           <Route path="/members" element={<MembersPage />} />
           <Route path="/member/:id" element={<MemberProfile />} />
           <Route path="/projects" element={<ProjectsPage />} />
           <Route path="/projects/:id" element={<ProjectsProfile />} />
+          <Route path="/projects/:id" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginScreen />} />
           <Route

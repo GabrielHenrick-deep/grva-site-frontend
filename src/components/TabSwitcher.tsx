@@ -11,7 +11,6 @@ export const TabSwitcher: React.FC<TabSwitcherProps> = ({ activeTab, onTabChange
   const tabs = [
     { id: 'users' as TabType, label: 'Members', icon: Users },
     { id: 'projects' as TabType, label: 'Projects', icon: Briefcase },
-     { id: 'imageManager' as TabType, label: 'ImageManager', icon: Calendar },
   ];
 
   return (

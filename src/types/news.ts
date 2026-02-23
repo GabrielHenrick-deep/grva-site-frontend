@@ -1,4 +1,4 @@
-import { Project } from "./projects";
+import { Project } from "./project";
 
 export interface NewsArticle {
   id: string;
