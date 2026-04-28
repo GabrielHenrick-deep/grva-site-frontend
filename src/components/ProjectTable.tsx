@@ -208,7 +208,7 @@ export const ProjectTable: React.FC = () => {
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-1">
+            <label className="block text-sm font-medium text-white bg-gray-900 mb-1">
               URL da Imagem
             </label>
             <input
@@ -216,7 +216,7 @@ export const ProjectTable: React.FC = () => {
               required
               value={formData.image_url}
               onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <div>
@@ -228,7 +228,7 @@ export const ProjectTable: React.FC = () => {
               required
               value={formData.name_project}
               onChange={(e) => setFormData({ ...formData, name_project: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <div>
@@ -240,7 +240,7 @@ export const ProjectTable: React.FC = () => {
               rows={3}
               value={formData.descri}
               onChange={(e) => setFormData({ ...formData, descri: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
             <div>
@@ -252,7 +252,7 @@ export const ProjectTable: React.FC = () => {
               required
               value={formData.video_url}
               onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
             <div>
@@ -264,7 +264,7 @@ export const ProjectTable: React.FC = () => {
               required
               value={formData.name_project}
               onChange={(e) => setFormData({ ...formData, name_project: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border text-gray-900 border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
             <div>
@@ -276,7 +276,7 @@ export const ProjectTable: React.FC = () => {
               required
               value={formData.artigo}
               onChange={(e) => setFormData({ ...formData, artigo: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 text-gray-900 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           <div className="flex justify-end space-x-3 pt-4">
