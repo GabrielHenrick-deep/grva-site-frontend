@@ -5,6 +5,7 @@ import { HomePage } from './pages/HomePage';
 import { MembersPage } from './pages/MembersPage';
 import { MemberProfile } from './pages/MemberProfile';
 import { ContactPage } from './pages/ContactPage';
+import { PrivacyPage } from './pages/PrivacyPage';
 import ProjectsPage from './pages/ProjectsPage';
 import ProjectsProfile from './pages/ProjectProfile';
 import { BlogPage } from './pages/BlogPage';
@@ -32,6 +33,7 @@ function App() {
           <Route path="/projects/:id" element={<ProjectsProfile />} />
           <Route path="/projects/:id" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/privacidade" element={<PrivacyPage />} />
           <Route path="/login" element={<LoginScreen />} />
           <Route
             path="/admin"

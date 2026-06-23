@@ -1,35 +1,23 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, ArrowRight } from 'lucide-react';
-import {Link, useNavigate } from 'react-router-dom';
-// import { api } from '../routes/axios';
-import api from '../api/axios';
-import { em } from 'framer-motion/m';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../lib/api';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  
+
 const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
   event.preventDefault();
   setIsLoading(true);
 
   try {
-    // Login com token (sem csrf-cookie)
+    await api.get('/sanctum/csrf-cookie');
+
     const res = await api.post('/login', { email, password });
-
-    const token = res.data.token;
-    localStorage.setItem('token', token);
-
-    // Atualiza o header para as próximas requisições
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-    // Valida se está autenticado
-    const userRes = await api.get('/user');
-    console.log("Usuário logado:", userRes.data);
 
     setEmail("");
     setPassword("");
@@ -42,14 +30,11 @@ const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
   }
 };
 
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        {/* Login Form */}
         <div className="bg-gray-800/50 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-700/50 p-8">
           <form onSubmit={handleLogin} className="space-y-6">
-            {/* Email Field */}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-semibold text-gray-300">
                 Email
@@ -70,7 +55,6 @@ const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
               </div>
             </div>
 
-            {/* Password Field */}
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-semibold text-gray-300">
                 Senha
@@ -102,23 +86,6 @@ const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
               </div>
             </div>
 
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-600 rounded transition-colors bg-gray-700"
-                />
-                <label htmlFor="remember-me" className="ml-2 text-sm text-gray-400">
-                  Lembrar de mim
-                </label>
-              </div>
-            </div>
-
-            {/* Login Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -134,16 +101,6 @@ const handleLogin = async (event: React.FormEvent<HTMLFormElement>) => {
               )}
             </button>
           </form>
-
-          {/* Sign Up Link */}
-
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">
-            Protegido por criptografia de ponta a ponta
-          </p>
         </div>
       </div>
     </div>

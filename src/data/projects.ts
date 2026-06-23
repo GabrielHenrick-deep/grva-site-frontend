@@ -163,7 +163,7 @@ export const projects: Project[] = [
     ],
     challenges: [
       'Ensuring AI model accuracy and reliability',
-      'Compliance with healthcare regulations (HIPAA, GDPR)',
+      'Compliance with healthcare regulations (LGPD, HIPAA)',
       'Managing sensitive patient data securely',
       'Gaining acceptance from medical professionals'
     ],

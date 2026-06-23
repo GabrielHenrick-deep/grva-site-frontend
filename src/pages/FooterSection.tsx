@@ -31,6 +31,14 @@ export function FooterSection() {
                     </li>
                     <li>
                     <Link 
+                      to="/privacidade"
+                      className="text-white hover:text-gray-300 transition"
+                    >
+                      Privacidade
+                    </Link>
+                    </li>
+                    <li>
+                    <Link 
                       to="/contact"
                       className="text-white hover:text-gray-300 transition"
                     >

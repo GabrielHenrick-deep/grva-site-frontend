@@ -14,7 +14,7 @@
     "@radix-ui/react-tabs": "^1.0.4",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
-    "@supabase/supabase-js": "^2.49.4",
+
     "axios": "^1.10.0",
     "clsx": "^2.1.0",
     "framer-motion": "^12.6.5",
